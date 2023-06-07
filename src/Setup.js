@@ -6,14 +6,12 @@ import { typeDefinitions } from '@polkadot/types';
 
 // install with `yarn add @phala/sdk` .   //https://www.npmjs.com/package/@phala/sdk
 import { PinkContractPromise, OnChainRegistry, types, create, signCertificate, CertificateData } from '@phala/sdk'
-// import { types, create } from '@phala/sdk'
-
 
 import phat_boiler_plate_metadata from './Abis/phat_boiler_plate_metadata';  
 // import phat_boiler_plate_metadata from './Abis/phat_boiler_plate';  
 
-let phala_api, phat_contract_boiler_plate,polkadot_test_account;
-let certificate, certificateData;
+let phala_api, phat_contract_boiler_plate,polkadot_test_account,certificate, certificateData;
+
 const phat_contractId = "0x502a308532ed7c5253beacbe69fe3f2e68341159631a1a37073868dc3a6514fb"    //NEW PHALA TESTNET
 
 //#region ***** Setup Substrate Chain //*****
@@ -114,7 +112,6 @@ const getAccountIdtoHex = async (accountI32="") => {
 
 }
 //#endregion
-
 
 
 //#region PHAT_query get_my_number
