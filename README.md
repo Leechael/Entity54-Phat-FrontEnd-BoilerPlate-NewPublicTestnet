@@ -33,7 +33,7 @@ Using the old methododoly
         const contract = new PinkContractPromise(api, phatRegistry, phat_abi, phat_contractId, phat_contractKey);
         phat_contract_boiler_plate = contract;
 
-The api is sets up and we connect to a contract
+The api is set up and we connect to a contract
 
 <br>
 
@@ -76,9 +76,10 @@ Read function const get_my_number = async () => {
 
 ## ERRORS WHY?
 
+<br>
+
 > Note: In the webpage SmartPay Dashboard by clicking Read MyNum button we invoked get_my_number = async () => { READ
-
-and clicking Phat SetMyNum button invokes const set_my_number = async (newNumber=5) => { WRITE
+> and clicking Phat SetMyNum button invokes const set_my_number = async (newNumber=5) => { WRITE
 
 <br>
 <br>
@@ -90,7 +91,7 @@ and clicking Phat SetMyNum button invokes const set_my_number = async (newNumber
 
 <br>
 
-![plot](./Printscreens/phat_boiler_plate_1.png)
+![plot](./Printscreens/phat_boiler_plate_2.png)
 
 <br>
 <br>
