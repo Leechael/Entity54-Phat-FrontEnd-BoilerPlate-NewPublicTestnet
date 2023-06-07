@@ -1,6 +1,99 @@
 $yarn
 
-to install
+to install, then
+
+$npm start
+
+We are trying to connect to a Phat contract using the new public testnet
+
+Have reinstalled phala sdk
+
+We have a very basic Phat contract where we can read and write a number value and a string value
+
+The abi , libr.rs and .contract are within Abis folder
+
+The file Setup.js has all the logic for estalishing the api, connecting to a phat contract and do a simple read and write
+
+Using the old methododoly
+
+        const wsProvider = new WsProvider('wss://poc5.phala.network/ws');
+
+        const api = await ApiPromise.create({
+            provider: wsProvider,
+            types: { ...types, ...typeDefinitions }
+        });
+
+        await api.isReady;
+
+        //METHOD 1 OLD METHOD WORKS
+        const phatRegistry = await OnChainRegistry.create(api)
+        const phat_abi = phat_boiler_plate_metadata;
+        const phat_contractKey = await phatRegistry.getContractKey(phat_contractId);
+
+        const contract = new PinkContractPromise(api, phatRegistry, phat_abi, phat_contractId, phat_contractKey);
+        phat_contract_boiler_plate = contract;
+
+The api is sets up and we connect to a contract
+
+<br>
+
+Using the new guidelines form here https://www.npmjs.com/package/@phala/sdk
+and writing
+
+    const wsProvider = new WsProvider('wss://poc5.phala.network/ws');
+
+    const api = await ApiPromise.create({
+    	provider: wsProvider,
+    	types: { ...types, ...typeDefinitions }
+    });
+
+    await api.isReady;
+
+    //METHOD 2 NEW METHOD ERRORS
+    const pruntimeURL = 'https://poc5.phala.network/tee-api-1/';
+    // const metadata = phat_boiler_plate_metadata;
+    const metadata = JSON.stringify(phat_boiler_plate_metadata);
+
+    const contract2 = new ContractPromise(
+    	await create({api, baseURL: pruntimeURL, phat_contractId}),
+    	JSON.parse(metadata),
+    	phat_contractId
+    );
+
+## ERRORS WHY?
+
+Lastly in both cases it errors when trying to read or write using certificate
+
+Using the Polakdot Extension here: const setPolkadotInjector = async (injector, injectorAddress) => {
+
+Using a dummy account here const getAccountIdtoHex = async (accountI32="") => {}
+
+Example:
+
+Read function const get_my_number = async () => {
+
+<br>
+
+## ERRORS WHY?
+
+> Note: In the webpage SmartPay Dashboard by clicking Read MyNum button we invoked get_my_number = async () => { READ
+
+and clicking Phat SetMyNum button invokes const set_my_number = async (newNumber=5) => { WRITE
+
+<br>
+<br>
+<br>
+
+![plot](./Printscreens/phat_boiler_plate_1.png)
+
+<br>
+
+<br>
+
+![plot](./Printscreens/phat_boiler_plate_1.png)
+
+<br>
+<br>
 
 THIS IS A BOILER PLATE FRONT END FOR PHALA DURING PHAT CLOSED BETA
 
