@@ -26,8 +26,11 @@ function App (props) {
         else {
             const injector = await web3FromAddress(SENDER); // finds an injector for an address
             console.log(`polakdotSigner ===> injector: `,injector);
+            const accounts = await web3Accounts(); 
+            const account = accounts.find(i => i.address === SENDER)
+            setPolkadotInjector(injector.signer, account);
             // setPolakdotSigner(injector);
-            setPolkadotInjector(injector,SENDER);
+            // setPolkadotInjector(injector,SENDER);
             setPolakdotAccountSigner({injector: injector, address: SENDER});
             return injector;    
         }
