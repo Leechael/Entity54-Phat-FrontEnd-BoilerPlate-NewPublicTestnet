@@ -114,7 +114,7 @@ const get_my_number = async () => {
 		
 		const contract = phat_contract_boiler_plate;
 		//For queries use polkadot_test_account 
-		const { output, result, debugMessage, gasConsumed, gasRequired, storageDeposit } = await contract.query.getMyNumber(polkadot_test_account, {cert: certificateData});
+		const { output, result, debugMessage, gasConsumed, gasRequired, storageDeposit } = await contract.query.getMyNumber(polkadot_test_account.address, {cert: certificateData});
 
 
 		// The actual result from RPC as `ContractExecResult`
