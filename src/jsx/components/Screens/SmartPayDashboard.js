@@ -7,7 +7,8 @@ import { set_my_number, set_my_message, get_my_number, get_my_message } from "..
 const SmartPay = ({ phala_api, blockHeader }) => {
 	const { background } = useContext(ThemeContext);
 	const [phat_Message, setPhat_Message] = useState("");
-	const [palletAdminAddress, setPalletAdminAddress] = useState("");
+	const [phatValue, setPhatValue] = useState("");
+
 	const [smartPay_button_active, setSmartPay_button_active] = useState(true);
 	const [pallet_balance, setPallet_balance] = useState("");
 	const [overallLiabilities, setOverallLiabilities] = useState([]);
@@ -22,22 +23,23 @@ const SmartPay = ({ phala_api, blockHeader }) => {
 
 	const readMyMessage = async () => {
 		const response = await get_my_message();
-		console.log(`A new PHAT readMyMessage: `,response);
-		setPhat_Message(response);
+		console.log(`A new PHAT readMyMessage: `,response.Ok);
+		setPhat_Message(response.Ok);
 	}
 	const readMyNum = async () => {
 		const response  = await get_my_number();
-		console.log(`A new PHAT readMyNum: `,response);
+		console.log(`A new PHAT readMyNum: `,response.Ok);
+		setPhat_Message(response.Ok);
 	}
 
 
 	const phala_setMyNymber = async () => {
-				await set_my_number(palletAdminAddress);
-				console.log(`A new phala_setMyNymber has been submitted`);
+				await set_my_number(phatValue);
+				console.log(`A new phala_setMyNymber has been submitted with phatValue: ${phatValue}`);
 	}
 	const phala_setMyMessage = async () => {
-		await set_my_message(palletAdminAddress);
-		console.log(`A new phala_setMyMessage has been submitted`);
+		await set_my_message(phatValue);
+		console.log(`A new phala_setMyMessage has been submitted with phatValue: ${phatValue}`);
 	}
 
 	useEffect(() => {
@@ -210,8 +212,8 @@ const SmartPay = ({ phala_api, blockHeader }) => {
 									<div className="mb-2" style={{backgroundColor:""}}> 
 										<div className="align-items-center"  style={{backgroundColor:""}}>
 											<div className="ms-0 pt-2" style={{backgroundColor:"", width:"90%"}}>
-												<input type="text" value = {""} placeholder="" className="form-control fs-16" style={{color:"white",  textAlign:"center",  }} 
-													onChange={(event) => setPalletAdminAddress(event.target.value)}
+												<input type="text" value = {phatValue} placeholder="" className="form-control fs-16" style={{color:"white",  textAlign:"center",  }} 
+													onChange={(event) => setPhatValue(event.target.value)}
 												/>
 											</div>
 										</div>

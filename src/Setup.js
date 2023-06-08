@@ -7,10 +7,8 @@ import { typeDefinitions } from '@polkadot/types';
 // install with `yarn add @phala/sdk` .   //https://www.npmjs.com/package/@phala/sdk
 import { PinkCodePromise, PinkBlueprintPromise, PinkContractPromise, OnChainRegistry, types, create, signCertificate, CertificateData, options, signAndSend } from '@phala/sdk'
 
-import phat_boiler_plate_metadata from './Abis/phat_boiler_plate_metadata';  
-// import phat_boiler_plate_metadata from './Abis/phat_boiler_plate';  
+import phat_boiler_plate_metadata from './Abis/phat_boiler_plate';  
 
-// import targetFile from './Abis/phat_boiler_plate.contract';  
 
 let phala_api, phat_contract_boiler_plate,polkadot_test_account,certificate, certificateData;
 const phat_contractId = "0x502a308532ed7c5253beacbe69fe3f2e68341159631a1a37073868dc3a6514fb"    //NEW PHALA TESTNET
@@ -23,8 +21,6 @@ const setup_SubstrateChain = async (wsURL = 'Phala') => {
 
 	const api = await ApiPromise.create({
 		provider: wsProvider,
-		// noInitWarn: true ,
-		// types
 		types: { ...types, ...typeDefinitions }
 	});
 	console.log('Connected.')
@@ -48,21 +44,19 @@ const setup_SubstrateChain = async (wsURL = 'Phala') => {
 	const contract = new PinkContractPromise(api, phatRegistry, phat_abi, phat_contractId, phat_contractKey);
 	console.log("contract:",contract.abi.messages.map((e)=>{return e.method}))
 	
-
-	const clusterId = phatRegistry.clusterId;
-    // const clusterInfo = phatRegistry.clusterInfo
-	const pruntimeURL = phatRegistry.pruntimeURL;
-	console.log('Cluster ID:', clusterId)
-	console.log('Pruntime Endpoint URL:', pruntimeURL)
-
+	// const clusterId = phatRegistry.clusterId;
+    // // const clusterInfo = phatRegistry.clusterInfo
+	// const pruntimeURL = phatRegistry.pruntimeURL;
+	// console.log('Cluster ID:', clusterId)
+	// console.log('Pruntime Endpoint URL:', pruntimeURL)
 
 	phala_api = api;
 	phat_contract_boiler_plate = contract;
 	console.log("contract:",contract.abi.messages.map((e)=>{return e.method}))
 	console.log(`phala_api is set`);
-	getAccountIdtoHex();   //USED FOR TESTING AND TO BE REPLACED BY POLKADOT EXTENSION
-	// get_my_number();
-	// get_my_message();
+	await getAccountIdtoHex();   //USED FOR TESTING AND TO BE REPLACED BY POLKADOT EXTENSION
+	await get_my_number();
+	await get_my_message();
 
   return {api};
 };
@@ -73,11 +67,10 @@ let polkadotInjector = null, polkadotInjectorAddress=null;
 const setPolkadotInjector = async (injector, injectorAddress) => { 
     polkadotInjector = injector;
     polkadotInjectorAddress = injectorAddress;
-    console.log(`Setup New Polkadot Signer/Injector polkadotInjectorAddress: ${polkadotInjectorAddress} polkadotInjector: `,polkadotInjector);
+    console.log(`Setup New Polkadot Signer/Injector polkadotInjectorAddress: ${polkadotInjectorAddress} polkadotInjector.address: ${polkadotInjector.address} polkadotInjector: `,polkadotInjector);
 	// Setup New Polkadot Signer/Injector polkadotInjectorAddress: 5DAqjjBN3CJteqrmps95HUmo325xDBuErC8BoNd88ud6Cxgo polkadotInjector: ...
 
-	// Create the certiciate object
-	// const account = injectorAddress; /* ... your account address in the signer .. */;
+	// Create the certificate object
 	certificate = await signCertificate({
 		api: phala_api,
 		account: injectorAddress,
@@ -113,9 +106,9 @@ const get_my_number = async () => {
 		console.log(` ===> get_my_number `,certificateData);
 		
 		const contract = phat_contract_boiler_plate;
+
 		//For queries use polkadot_test_account 
 		const { output, result, debugMessage, gasConsumed, gasRequired, storageDeposit } = await contract.query.getMyNumber(polkadot_test_account.address, {cert: certificateData});
-
 
 		// The actual result from RPC as `ContractExecResult`
 		console.log("===> result.toHuman() : ",result.toHuman());
@@ -138,6 +131,7 @@ const get_my_number = async () => {
 	}
 	else { console.log(`PHALA API IS NOT SET UP YET`); return null }
 }
+//#endregion
 
 const get_my_message = async () => {
 
@@ -166,8 +160,10 @@ const set_my_number = async (newNumber=5) => {
 		const contract = phat_contract_boiler_plate;
 		console.log(`set_my_number: ${newNumber} polkadotInjectorAddress: `,polkadotInjectorAddress);
 
+	    console.log(`set_my_number: ${newNumber} certificate: `,certificate);
+
 		//DRY RUN
-		const { gasRequired, storageDeposit } = await contract.query.setMyNumber(polkadot_test_account.address, { cert: certificateData }, newNumber);
+		const { gasRequired, storageDeposit } = await contract.query.setMyNumber(polkadotInjectorAddress, { cert: certificate }, newNumber);
 		console.log("gasRequired & storageDeposit: ",gasRequired.toHuman(),storageDeposit.toHuman());
 
 		const options = {
