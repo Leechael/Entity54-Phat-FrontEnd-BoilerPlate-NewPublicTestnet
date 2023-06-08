@@ -70,6 +70,9 @@ const setPolkadotInjector = async (injector, injectorAddress) => {
     console.log(`Setup New Polkadot Signer/Injector polkadotInjectorAddress: ${polkadotInjectorAddress} polkadotInjector.address: ${polkadotInjector.address} polkadotInjector: `,polkadotInjector);
 	// Setup New Polkadot Signer/Injector polkadotInjectorAddress: 5DAqjjBN3CJteqrmps95HUmo325xDBuErC8BoNd88ud6Cxgo polkadotInjector: ...
 
+console.log(`signCertificate: `,signCertificate);
+
+
 	// Create the certificate object
 	certificate = await signCertificate({
 		api: phala_api,
@@ -154,6 +157,55 @@ const get_my_message = async () => {
 }
 
 
+
+
+//THIS RUNS FINE BUT IS FOR TEST ACCOUNT THAT WE KNOW THE KEYPAIR
+const set_my_numbers2 = async (newNumber=5) => {
+	if (phala_api && phat_contract_boiler_plate) 
+	{
+		const contract = phat_contract_boiler_plate;
+		// console.log(`set_my_number: ${newNumber} polkadotInjectorAddress: `,polkadotInjectorAddress);
+
+	    // console.log(`set_my_number: ${newNumber} certificate: `,certificate);
+
+		//DRY RUN
+		const { gasRequired, storageDeposit } = await contract.query.setMyNumber(polkadot_test_account.address, { cert: certificateData }, newNumber);
+		console.log("gasRequired & storageDeposit: ",gasRequired.toHuman(),storageDeposit.toHuman());
+
+		const options = {
+			gasLimit: gasRequired.refTime,
+			storageDepositLimit: storageDeposit.isCharge ? storageDeposit.asCharge : null,
+			cert: certificateData,
+		}
+
+		const tx = await contract.tx
+		.setMyNumber(options, newNumber)
+		.signAndSend(polkadot_test_account, { nonce: -1  }, ({ events = [], status, txHash }) => {
+		  if (status.isInBlock) {
+			  console.log("In Block")
+		  }
+		  if (status.isCompleted) {
+			  console.log("Completed")
+		  }
+		  if (status.isFinalized) {
+			console.log(`Transaction included at blockHash ${status.asFinalized}`);
+			console.log(`Transaction hash ${txHash.toHex()}`);
+	  
+			// Loop through Vec<EventRecord> to display all events
+			events.forEach(({ phase, event: { data, method, section } }) => {
+			  console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+			});
+		  }
+		})
+  
+	}
+	else console.log(`PHALA API IS NOT SET UP YET`);
+  
+}
+
+
+
+//THIS IS WHAT WE WANT SO THE USER CAN SING USIGN HIS POLAKDOT EXTENSION ACCOUNT
 const set_my_number = async (newNumber=5) => {
 	if (phala_api && phat_contract_boiler_plate) 
 	{
@@ -169,10 +221,11 @@ const set_my_number = async (newNumber=5) => {
 		const options = {
 			gasLimit: gasRequired.refTime,
 			storageDepositLimit: storageDeposit.isCharge ? storageDeposit.asCharge : null,
+			cert: certificate 
 		}
 
 		const tx = await contract.tx
-		.setMyNumber(certificate, options, newNumber)
+		.setMyNumber(options, newNumber)
 		.signAndSend(polkadotInjectorAddress, { signer:  polkadotInjector.signer }, ({ events = [], status, txHash }) => {
 		  if (status.isInBlock) {
 			  console.log("In Block")
