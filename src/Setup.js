@@ -114,7 +114,7 @@ const get_my_number = async () => {
 		
 		const contract = phat_contract_boiler_plate;
 		//For queries use polkadot_test_account 
-		const { output, result, debugMessage, gasConsumed, gasRequired, storageDeposit } = await contract.query.getMyNumber(polkadot_test_account, {cert: certificateData});
+		const { output, result, debugMessage, gasConsumed, gasRequired, storageDeposit } = await contract.query.getMyNumber(polkadot_test_account.address, {cert: certificateData});
 
 
 		// The actual result from RPC as `ContractExecResult`
@@ -144,7 +144,7 @@ const get_my_message = async () => {
 	if (phala_api) 
 	{
 		const contract = phat_contract_boiler_plate;
-		const { gasRequired, storageDeposit, result, output } = await contract.query.getMyMessage(polkadot_test_account);
+		const { gasRequired, storageDeposit, result, output } = await contract.query.getMyMessage(polkadot_test_account.address, { cert: certificateData });
 
 		if (result.isOk) {
 			// output the return value
@@ -167,7 +167,7 @@ const set_my_number = async (newNumber=5) => {
 		console.log(`set_my_number: ${newNumber} polkadotInjectorAddress: `,polkadotInjectorAddress);
 
 		//DRY RUN
-		const { gasRequired, storageDeposit } = await contract.query.setMyNumber(polkadot_test_account, newNumber);
+		const { gasRequired, storageDeposit } = await contract.query.setMyNumber(polkadot_test_account.address, { cert: certificateData }, newNumber);
 		console.log("gasRequired & storageDeposit: ",gasRequired.toHuman(),storageDeposit.toHuman());
 
 		const options = {
@@ -207,7 +207,7 @@ const set_my_message = async (newMessage="Hello Phala World") => {
 		console.log(`set_my_number: ${newMessage} polkadotInjectorAddress: `,polkadotInjectorAddress);
 
 		//DRY RUN
-		const { gasRequired, storageDeposit } = await contract.query.setMyMessage(polkadot_test_account, newMessage);
+		const { gasRequired, storageDeposit } = await contract.query.setMyMessage(polkadot_test_account.address, { cert: certificateData }, newMessage);
 		console.log("gasRequired & storageDeposit: ",gasRequired.toHuman(),storageDeposit.toHuman());
 
 		const options = {
