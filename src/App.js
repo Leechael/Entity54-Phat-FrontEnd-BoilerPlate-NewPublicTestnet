@@ -98,7 +98,7 @@ function App (props) {
   
       if (parachainSpecs.api)
       {
-        parachain(parachainSpecs.api).catch((er) => { console.log(`APP.JS parachain Error: `,er);  });
+        // parachain(parachainSpecs.api).catch((er) => { console.log(`APP.JS parachain Error: `,er);  });
         console.log(`#Will be running a check here`);
       }
       else console.log(`App.js => setupSpecs.provider is undefined`);

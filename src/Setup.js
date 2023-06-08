@@ -5,40 +5,37 @@ import { ContractPromise, Abi } from '@polkadot/api-contract';
 import { typeDefinitions } from '@polkadot/types';
 
 // install with `yarn add @phala/sdk` .   //https://www.npmjs.com/package/@phala/sdk
-import { PinkContractPromise, OnChainRegistry, types, create, signCertificate, CertificateData } from '@phala/sdk'
+import { PinkCodePromise, PinkBlueprintPromise, PinkContractPromise, OnChainRegistry, types, create, signCertificate, CertificateData, options, signAndSend } from '@phala/sdk'
 
 import phat_boiler_plate_metadata from './Abis/phat_boiler_plate_metadata';  
 // import phat_boiler_plate_metadata from './Abis/phat_boiler_plate';  
 
-let phala_api, phat_contract_boiler_plate,polkadot_test_account,certificate, certificateData;
+// import targetFile from './Abis/phat_boiler_plate.contract';  
 
+let phala_api, phat_contract_boiler_plate,polkadot_test_account,certificate, certificateData;
 const phat_contractId = "0x502a308532ed7c5253beacbe69fe3f2e68341159631a1a37073868dc3a6514fb"    //NEW PHALA TESTNET
+
 
 //#region ***** Setup Substrate Chain //*****
 const setup_SubstrateChain = async (wsURL = 'Phala') => {
+
 	const wsProvider = new WsProvider('wss://poc5.phala.network/ws');
 
 	const api = await ApiPromise.create({
 		provider: wsProvider,
+		// noInitWarn: true ,
 		// types
 		types: { ...types, ...typeDefinitions }
 	});
+	console.log('Connected.')
 
 	await api.isReady;
 	console.log(`api => : `,api);
 	console.log(" ********** API PROPERTIES ********** ");
 	console.log((await api.rpc.system.properties()).toHuman());
-	console.log(" ********** API PROPERTIES ********** ");
-
-
-	//METHOD 1 OLD METHOD WORKS
+	 
 	console.log(" ********** phatRegistry ********** ");
 	const phatRegistry = await OnChainRegistry.create(api)
-
-	///THIS NOW ERRORS cannot find off-chain worker
-	// const phatRegistry = await OnChainRegistry.create(api, { 
-	// pruntimeURL: 'https://poc5.phala.network/tee-api-1/'
-	// })
 
 	console.log(" ********** phat_abi ********** ");
 	const phat_abi = phat_boiler_plate_metadata;
@@ -49,20 +46,14 @@ const setup_SubstrateChain = async (wsURL = 'Phala') => {
 
 	console.log(" ********** Phala contract ********** ");
 	const contract = new PinkContractPromise(api, phatRegistry, phat_abi, phat_contractId, phat_contractKey);
-	phat_contract_boiler_plate = contract;
 	console.log("contract:",contract.abi.messages.map((e)=>{return e.method}))
+	
 
-
-    //METHOD 2 NEW METHOD ERRORS
-	const pruntimeURL = 'https://poc5.phala.network/tee-api-1/';
-	// const metadata = phat_boiler_plate_metadata;
-	const metadata = JSON.stringify(phat_boiler_plate_metadata);
-
-	const contract2 = new ContractPromise(
-		await create({api, baseURL: pruntimeURL, phat_contractId}),
-		JSON.parse(metadata),
-		phat_contractId
-	);
+	const clusterId = phatRegistry.clusterId;
+    // const clusterInfo = phatRegistry.clusterInfo
+	const pruntimeURL = phatRegistry.pruntimeURL;
+	console.log('Cluster ID:', clusterId)
+	console.log('Pruntime Endpoint URL:', pruntimeURL)
 
 
 	phala_api = api;
@@ -86,7 +77,7 @@ const setPolkadotInjector = async (injector, injectorAddress) => {
 	// Setup New Polkadot Signer/Injector polkadotInjectorAddress: 5DAqjjBN3CJteqrmps95HUmo325xDBuErC8BoNd88ud6Cxgo polkadotInjector: ...
 
 	// Create the certiciate object
-	const account = injectorAddress; /* ... your account address in the signer .. */;
+	// const account = injectorAddress; /* ... your account address in the signer .. */;
 	certificate = await signCertificate({
 		api: phala_api,
 		account: injectorAddress,
@@ -123,7 +114,8 @@ const get_my_number = async () => {
 		
 		const contract = phat_contract_boiler_plate;
 		//For queries use polkadot_test_account 
-		const { output, result, debugMessage, gasConsumed, gasRequired, storageDeposit } = await contract.query.getMyNumber(certificateData, polkadot_test_account);
+		const { output, result, debugMessage, gasConsumed, gasRequired, storageDeposit } = await contract.query.getMyNumber(polkadot_test_account, {cert: certificateData});
+
 
 		// The actual result from RPC as `ContractExecResult`
 		console.log("===> result.toHuman() : ",result.toHuman());
